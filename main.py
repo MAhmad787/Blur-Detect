@@ -1,27 +1,30 @@
-# Python code to read image
+import os
 import cv2
 
-# To read image from disk, we use
-# cv2.imread function, in below method,
-img = cv2.imread("img.jpg", 0)
-
-
-cv2.namedWindow("Resize", cv2.WINDOW_NORMAL)
-
-cv2.resizeWindow("Resize", 300, 340)
-# Creating GUI window to display an image on screen
-# first Parameter is windows title (should be in string format)
-# Second Parameter is image array
-cv2.imshow("Resize", img)
-
-# To hold the window on screen, we use cv2.waitKey method
-# Once it detected the close input, it will release the control
-# To the next line
-# First Parameter is for holding screen for specified milliseconds
-# It should be positive integer. If 0 pass an parameter, then it will
-# hold the screen until user close it.
-cv2.waitKey(0)
-
-# It is for removing/deleting created GUI window from screen
-# and memory
-cv2.destroyAllWindows()
+all_files = os.listdir("image_dir")
+images = []
+image_types = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp']
+for x in all_files:
+    if x.endswith(tuple(image_types)):
+        images.append(x)
+threshold = 100
+for img in images:
+    image = cv2.imread("image_dir/"+img, cv2.IMREAD_GRAYSCALE)
+    if image is not None:
+        laplacian_var = cv2.Laplacian(image, cv2.CV_64F).var()
+        if laplacian_var < threshold:
+            cv2.namedWindow(img, cv2.WINDOW_NORMAL)
+            cv2.resizeWindow(img, 300, 300)
+            cv2.moveWindow(img, 200, 100 )
+            cv2.imshow(img, image)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            print(img + " is a blurred image")
+            print("Laplacian Value")
+            print(laplacian_var)
+        else:
+            print(img + " is not a blurred image")
+            print("Laplacian Value")
+            print(laplacian_var)
+    else: 
+        print("Image Not Found")
